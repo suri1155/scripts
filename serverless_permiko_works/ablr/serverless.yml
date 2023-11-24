@@ -1,0 +1,40 @@
+org: suri
+app: ba-cp
+service: abr
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+          Resource:
+            - "arn:aws:secretsmanager:ap-southeast-1:1234567:secret:test_mssql-YIWX10"
+
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    zip: true
+    layer: true
+
+functions:
+  ablr_new:
+    handler: handler.lambda_main
+    ephemeralStorageSize: 9216
+    timeout: 120
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
